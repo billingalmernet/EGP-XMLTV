@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv generator-info-name="Local M3U Converter">
+
+<!-- DAFTAR CHANNELS -->
+  <channel id=".n.....tvg.id................n.....tvg.logo................n.....group.title................n.......n....n....n.....g.">
+    <display-name lang="id">\n]*(?:tvg-id="([^"]*)")?[^,\n]*(?:tvg-logo="([^"]*)")?[^,\n]*(?:group-title="([^"]*)")?[^,\n]*,([^\n]+)\n([^\n#]+)/g;</display-name>
+  </channel>
+
+<!-- DAFTAR PROGRAMMES -->
+  <programme start="20260101000000 +0700" stop="20350101000000 +0700" channel=".n.....tvg.id................n.....tvg.logo................n.....group.title................n.......n....n....n.....g.">
+    <title lang="id">\n]*(?:tvg-id="([^"]*)")?[^,\n]*(?:tvg-logo="([^"]*)")?[^,\n]*(?:group-title="([^"]*)")?[^,\n]*,([^\n]+)\n([^\n#]+)/g;</title>
+    <desc lang="id">Kategori: IPTV Channel. Video/Saluran ini siap ditonton langsung dari perangkat Anda.</desc>
+    <category lang="id">IPTV Channel</category>
+  </programme>
+
+</tv>
