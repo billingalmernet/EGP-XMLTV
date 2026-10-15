@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Instant M3U to XMLTV Generator</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; max-width: 600px; margin: auto; }
+        textarea { width: 100%; height: 250px; margin-top: 10px; font-family: monospace; }
+        button { background: #28a745; color: white; border: none; padding: 12px; font-size: 16px; cursor: pointer; border-radius: 5px; margin-top: 10px; width: 100%; }
+        button:hover { background: #218838; }
+        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>M3U to XMLTV Converter</h2>
+        <p>1. Buka URL playlist Anda di browser baru, tekan <b>Ctrl + A</b> lalu <b>Ctrl + C</b> untuk menyalin seluruh isinya.</p>
+        <p>2. Tempelkan seluruh teks tersebut ke kotak di bawah ini:</p>
+        <textarea id="m3uInput" placeholder="#EXTM3U ... paste teks playlist Anda di sini"></textarea>
+        <button onclick="convertToXmltv()">Konversi & Unduh XMLTV (.xml)</button>
+    </div>
+
+    <script>
+        function convertToXmltv() {
+            const m3uText = document.getElementById('m3uInput').value;
+            if(!m3uText.trim()){ alert("Kotak input masih kosong!"); return; }
+
+            let startTime = "20260101000000 +0700";
+            let stopTime = "20350101000000 +0700";
+            let channels = "";
+            let programmes = "";
+            let count = 0;
+
+            const pattern = /#EXTINF:[^,\n]*(?:tvg-id="([^"]*)")?[^,\n]*(?:tvg-logo="([^"]*)")?[^,\n]*(?:group-title="([^"]*)")?[^,\n]*,([^\n]+)\n([^\n#]+)/g;
+            let match;
+
+            while ((match = pattern.exec(m3uText)) !== null) {
+                let tvgId = match[1] ? match[1].trim() : "";
+                let tvgLogo = match[2] ? match[2].trim() : "";
+                let groupTitle = match[3] ? match[3].trim() : "IPTV Channel";
+                let title = match[4] ? match[4].trim() : "Unknown Channel";
+
+                if (!tvgId) {
+                    tvgId = title.toLowerCase().replace(/[^a-z0-9]/g, ".");
+                }
+
+                channels += `  <channel id="${tvgId}">\n    <display-name lang="id">${title}</display-name>\n`;
+                if(tvgLogo) channels += `    <icon src="${tvgLogo}" />\n`;
+                channels += `  </channel>\n`;
+
+                programmes += `  <programme start="${startTime}" stop="${stopTime}" channel="${tvgId}">\n`;
+                programmes += `    <title lang="id">${title}</title>\n`;
+                programmes += `    <desc lang="id">Kategori: ${groupTitle}. Video/Saluran ini siap ditonton langsung dari perangkat Anda.</desc>\n`;
+                programmes += `    <category lang="id">${groupTitle}</category>\n`;
+                programmes += `  </programme>\n`;
+                
+                count++;
+            }
+
+            if(count === 0) {
+                alert("Format teks tidak dikenali. Pastikan Anda menyalin seluruh teks M3U dengan benar.");
+                return;
+            }
+
+            let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n<tv generator-info-name="Local M3U Converter">\n\n<!-- DAFTAR CHANNELS -->\n${channels}\n<!-- DAFTAR PROGRAMMES -->\n${programmes}\n</tv>`;
+
+            let blob = new Blob([xmlContent], { type: "text/xml" });
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "playlist_guide.xml";
+            link.click();
+            alert("Berhasil mengonversi " + count + " item! File 'playlist_guide.xml' telah diunduh.");
+        }
+    </script>
+</body>
+</html>
